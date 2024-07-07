@@ -1,8 +1,8 @@
 package org.example.domain.rest.controller;
 
 import org.example.domain.entity.Turma;
-import org.example.domain.rest.dto.TurmaDTO;
-import org.example.domain.rest.dto.InformacoesTurmaDTO;
+import org.example.domain.rest.dto.CompleteTurmaDTO;
+import org.example.domain.rest.dto.ReturnTurmaDTO;
 import org.example.domain.service.TurmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +19,12 @@ public class TurmaController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Integer save(@RequestBody @Valid TurmaDTO turmaDTO){
+    public Integer save(@RequestBody @Valid CompleteTurmaDTO turmaDTO){
         return turmaService.save(turmaDTO);
     }
 
     @GetMapping("{id}")
-    public InformacoesTurmaDTO findById(@PathVariable Integer id){
+    public ReturnTurmaDTO findById(@PathVariable Integer id){
         return turmaService.findById(id);
     }
 

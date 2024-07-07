@@ -1,11 +1,9 @@
 package org.example.domain.rest.controller;
 
-import org.example.domain.entity.Aula;
 import org.example.domain.entity.Professor;
-import org.example.domain.rest.dto.AulaByIdProfessorDTO;
-import org.example.domain.rest.dto.InformacoesAulaDTO;
-import org.example.domain.rest.dto.ProfessorDTO;
-import org.example.domain.rest.dto.InformacoesProfessorDTO;
+import org.example.domain.rest.dto.ReturnAulaInProfessorDTO;
+import org.example.domain.rest.dto.CompleteProfessorDTO;
+import org.example.domain.rest.dto.ReturnProfessorDTO;
 import org.example.domain.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +20,17 @@ public class ProfessorController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Integer save(@RequestBody @Valid ProfessorDTO professorDTO){
+    public Integer save(@RequestBody @Valid CompleteProfessorDTO professorDTO){
         return professorService.save(professorDTO);
     }
 
     @GetMapping("{id}")
-    public InformacoesProfessorDTO findById(@PathVariable Integer id){
+    public ReturnProfessorDTO findById(@PathVariable Integer id){
         return professorService.findById(id);
     }
 
     @GetMapping("/aulas/{id}")
-    public List<AulaByIdProfessorDTO> findAulaByIdProfessor(@PathVariable Integer id){
+    public List<ReturnAulaInProfessorDTO> findAulaByIdProfessor(@PathVariable Integer id){
         return professorService.findAulaByIdProfessor(id);
     }
 
