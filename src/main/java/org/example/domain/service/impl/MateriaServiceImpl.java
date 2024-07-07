@@ -2,7 +2,7 @@ package org.example.domain.service.impl;
 
 import org.example.domain.entity.Materia;
 import org.example.domain.repository.MateriaRepository;
-import org.example.domain.rest.dto.MateriaDTO;
+import org.example.domain.rest.dto.CompleteMateriaDTO;
 import org.example.domain.service.MateriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -18,19 +18,20 @@ public class MateriaServiceImpl implements MateriaService {
     MateriaRepository materiaRepository;
 
     @Override
-    public Integer save(MateriaDTO materiaDTO) {
+    public Integer save(CompleteMateriaDTO materiaDTO) {
         Materia materia = new Materia(materiaDTO.getNome());
         materiaRepository.save(materia);
         return materia.getId();
     }
 
     @Override
-    public MateriaDTO findByID(Integer id) {
+    public CompleteMateriaDTO findByID(Integer id) {
         return materiaRepository.findById(id)
                 .map( materia -> {
-                    MateriaDTO materiaDTO = new MateriaDTO(materia.getNome());
+                    CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(materia.getNome());
                     return materiaDTO;
-                }).orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
     }
 
     @Override

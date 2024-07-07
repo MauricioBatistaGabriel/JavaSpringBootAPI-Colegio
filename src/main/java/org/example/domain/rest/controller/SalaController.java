@@ -1,7 +1,7 @@
 package org.example.domain.rest.controller;
 
 import org.example.domain.entity.Sala;
-import org.example.domain.rest.dto.SalaDTO;
+import org.example.domain.rest.dto.CompleteSalaDTO;
 import org.example.domain.service.SalaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +20,12 @@ public class SalaController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Integer save(@RequestBody @Valid SalaDTO salaDTO){
+    public Integer save(@RequestBody @Valid CompleteSalaDTO salaDTO){
         return salaService.save(salaDTO);
     }
 
     @GetMapping("{id}")
-    public SalaDTO findById(@PathVariable Integer id){
+    public CompleteSalaDTO findById(@PathVariable Integer id){
         return salaService.findById(id);
     }
 

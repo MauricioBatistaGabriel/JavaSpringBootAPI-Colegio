@@ -2,7 +2,7 @@ package org.example.domain.service.impl;
 
 import org.example.domain.entity.Sala;
 import org.example.domain.repository.SalaRepository;
-import org.example.domain.rest.dto.SalaDTO;
+import org.example.domain.rest.dto.CompleteSalaDTO;
 import org.example.domain.service.SalaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -18,16 +18,16 @@ public class SalaServiceImpl implements SalaService {
     private SalaRepository salaRepository;
 
     @Override
-    public Integer save(SalaDTO salaDTO) {
+    public Integer save(CompleteSalaDTO salaDTO) {
         Sala sala = new Sala(salaDTO.getSala());
         return salaRepository.save(sala).getId();
     }
 
     @Override
-    public SalaDTO findById(Integer id) {
+    public CompleteSalaDTO findById(Integer id) {
         return salaRepository.findById(id)
                 .map( sala -> {
-                    SalaDTO salaDTO = new SalaDTO(sala.getSala());
+                    CompleteSalaDTO salaDTO = new CompleteSalaDTO(sala.getSala());
                     return salaDTO;
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Sala com o ID:" + id + " não encontrada"));

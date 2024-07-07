@@ -3,9 +3,8 @@ package org.example.domain.service.impl;
 import org.example.domain.entity.Aula;
 import org.example.domain.entity.Materia;
 import org.example.domain.entity.Professor;
-import org.example.domain.repository.AulaRepository;
-import org.example.domain.repository.MateriaRepository;
-import org.example.domain.repository.ProfessorRepository;
+import org.example.domain.entity.Turma;
+import org.example.domain.repository.*;
 import org.example.domain.rest.dto.*;
 import org.example.domain.service.AulaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +26,38 @@ public class AulaServiceImpl implements AulaService {
     @Autowired
     private MateriaRepository materiaRepository;
 
+    @Autowired
+    private TurmaRepository turmaRepository;
+
+    @Autowired
+    private SalaRepository salaRepository;
+
     @Override
-    public Integer save(AulaDTO aulaDTO) {
+    public Integer save(CompleteAulaDTO aulaDTO) {
         Professor professor = professorRepository.findById(aulaDTO.getProfessor())
                 .orElseThrow( () -> new EntityNotFoundException("Professor com o ID:" + aulaDTO.getProfessor() + " não encontrado"));
 
         Materia materia = materiaRepository.findById(aulaDTO.getMateria())
                 .orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + aulaDTO.getMateria() + " não encontrada"));
 
-        Aula aula = new Aula(aulaDTO.getData(), professor, materia);
+        Turma turma = turmaRepository.findById(aulaDTO.getTurma())
+                .orElseThrow( () -> new EntityNotFoundException("Turma com o ID:" + aulaDTO.getTurma() + " não encontrada"));
+
+        Aula aula = new Aula(aulaDTO.getData(), professor, materia, turma);
         aulaRepository.save(aula);
         return aula.getId();
     }
 
     @Override
-    public InformacoesAulaDTO findById(Integer id) {
+    public ReturnAulaDTO findById(Integer id) {
         return aulaRepository.findById(id)
                 .map( aula -> {
-                    InformacoesProfessorDTO professorDTO = new InformacoesProfessorDTO(aula.getProfessor().getNome(), aula.getProfessor().getCpf());
-                    MateriaDTO materiaDTO = new MateriaDTO(aula.getMateria().getNome());
-                    InformacoesAulaDTO informacoesAulaDTO = new InformacoesAulaDTO(aula.getData(), professorDTO, materiaDTO);
-                    return informacoesAulaDTO;
+                    ReturnProfessorDTO professorDTO = new ReturnProfessorDTO(aula.getProfessor().getNome(), aula.getProfessor().getCpf());
+                    CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(aula.getMateria().getNome());
+                    CompleteSalaDTO salaDTO = new CompleteSalaDTO(aula.getTurma().getSala().getSala());
+                    ReturnTurmaInAulaDTO turmaDTO = new ReturnTurmaInAulaDTO(aula.getTurma().getNome(), salaDTO);
+                    ReturnAulaDTO aulaDTO = new ReturnAulaDTO(aula.getData(), professorDTO, materiaDTO, turmaDTO);
+                    return aulaDTO;
                 }).orElseThrow( () -> new EntityNotFoundException("Aula com o ID:" + id + " não encontrada"));
     }
 

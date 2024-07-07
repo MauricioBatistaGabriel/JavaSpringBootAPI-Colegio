@@ -1,8 +1,8 @@
 package org.example.domain.rest.controller;
 
 import org.example.domain.entity.Aula;
-import org.example.domain.rest.dto.AulaDTO;
-import org.example.domain.rest.dto.InformacoesAulaDTO;
+import org.example.domain.rest.dto.CompleteAulaDTO;
+import org.example.domain.rest.dto.ReturnAulaDTO;
 import org.example.domain.service.AulaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.HttpStatus.*;
@@ -19,12 +19,12 @@ public class AulaController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public Integer save(@RequestBody @Valid AulaDTO aulaDTO){
+    public Integer save(@RequestBody @Valid CompleteAulaDTO aulaDTO){
         return aulaService.save(aulaDTO);
     }
 
     @GetMapping("{id}")
-    public InformacoesAulaDTO findById(@PathVariable Integer id){
+    public ReturnAulaDTO findById(@PathVariable Integer id){
         return aulaService.findById(id);
     }
 

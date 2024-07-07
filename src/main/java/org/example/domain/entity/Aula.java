@@ -27,9 +27,14 @@ public class Aula {
     @JoinColumn(name = "id_materia")
     private Materia materia;
 
-    public Aula(String data, Professor professor, Materia materia) {
+    @ManyToOne
+    @JoinColumn(name = "id_turma")
+    private Turma turma;
+
+    public Aula(String data, Professor professor, Materia materia, Turma turma) {
         this.data = data;
         this.professor = professor;
         this.materia = materia;
+        this.turma = turma;
     }
 }

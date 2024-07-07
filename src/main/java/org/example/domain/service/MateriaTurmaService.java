@@ -1,13 +1,14 @@
 package org.example.domain.service;
 
 import org.example.domain.entity.MateriaTurma;
-import org.example.domain.rest.dto.MateriaDTO;
+import org.example.domain.rest.dto.CompleteMateriaDTO;
+import org.example.domain.rest.dto.CompleteMateriaTurmaDTO;
 
 import java.util.List;
 
 public interface MateriaTurmaService {
 
-    MateriaTurma save(Integer materia, Integer turma);
+    Integer save(CompleteMateriaTurmaDTO materiaTurmaDTO);
 
-    List<MateriaDTO> findMateriasByIdTurma(Integer id);
+    List<CompleteMateriaDTO> findMateriasByIdTurma(Integer id);
 }
