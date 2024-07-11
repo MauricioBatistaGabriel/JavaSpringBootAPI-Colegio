@@ -2,22 +2,17 @@ package org.example.domain.service.impl;
 
 import org.example.domain.entity.Sala;
 import org.example.domain.entity.Turma;
-import org.example.domain.repository.AlunoRepository;
-import org.example.domain.repository.MateriaRepository;
-import org.example.domain.repository.SalaRepository;
-import org.example.domain.repository.TurmaRepository;
-import org.example.domain.rest.dto.CompleteAlunoTurmaDTO;
-import org.example.domain.rest.dto.CompleteMateriaTurmaDTO;
-import org.example.domain.rest.dto.CompleteTurmaDTO;
-import org.example.domain.rest.dto.ReturnTurmaDTO;
+import org.example.domain.repository.*;
+import org.example.domain.rest.dto.*;
 import org.example.domain.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TurmaServiceImpl implements TurmaService {
@@ -45,6 +40,9 @@ public class TurmaServiceImpl implements TurmaService {
 
     @Autowired
     private AlunoTurmaService alunoTurmaService;
+
+    @Autowired
+    private AvaliacaoTurmaRepository avaliacaoTurmaRepository;
 
     @Override
     @Transactional
@@ -101,14 +99,34 @@ public class TurmaServiceImpl implements TurmaService {
     public ReturnTurmaDTO findById(Integer id) {
         return turmaRepository.findById(id)
                 .map( turma -> {
-                    ReturnTurmaDTO informacoesTurmaDTO = new ReturnTurmaDTO(turma.getNome(), salaService.findById(turma.getSala().getId()), materiaTurmaService.findMateriasByIdTurma(id));
+                    ReturnTurmaDTO informacoesTurmaDTO = new ReturnTurmaDTO(turma.getNome(), salaService.findById(turma.getSala().getId()), materiaService.findMateriasByIdTurma(id));
                     return informacoesTurmaDTO;
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Turma com ID:" + id + " não encontrada"));
     }
 
     @Override
-    public List<Turma> filterAll(Turma turma) {
+    public ReturnTurmaInOtherClassDTO findByIdTurmaInOtherClass(Integer id) {
+        return turmaRepository.findById(id)
+                .map( turma -> {
+                    CompleteSalaDTO salaDTO = new CompleteSalaDTO(turma.getSala().getSala());
+                    ReturnTurmaInOtherClassDTO turmaDTO = new ReturnTurmaInOtherClassDTO(turma.getNome(), salaDTO);
+                    return turmaDTO;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public ReturnTurmaInOtherClassDTO findTurmaByIdAvaliacao(Integer id) {
+        Turma turma = avaliacaoTurmaRepository.findTurmaByIdAvaliacao(id);
+        CompleteSalaDTO salaDTO = new CompleteSalaDTO(turma.getSala().getSala());
+        ReturnTurmaInOtherClassDTO turmaDTO = new ReturnTurmaInOtherClassDTO(turma.getNome(), salaDTO);
+        return turmaDTO;
+    }
+
+    //MÉTODO NÃO BUSCA TURMA POR MATÉRIA
+    @Override
+    public List<ReturnTurmaDTO> filterAll(CompleteTurmaDTO turmaDTO) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
@@ -116,8 +134,21 @@ public class TurmaServiceImpl implements TurmaService {
                         ExampleMatcher.StringMatcher.CONTAINING
                 );
 
+        CompleteSalaDTO salaDTO = (turmaDTO.getSala() != null) ?
+                salaService.findById(turmaDTO.getSala()) :
+                new CompleteSalaDTO();
+        Sala sala = new Sala(salaDTO.getSala());
+
+        Turma turma = new Turma(turmaDTO.getNome(), sala);
+
         Example example = Example.of(turma, matcher);
-        return turmaRepository.findAll(example);
+        List<Turma> turmas = turmaRepository.findAll(example);
+
+        return turmas.stream()
+                .map( turma1 -> {
+                    ReturnTurmaDTO turmaDTO1 = findById(turma1.getId());
+                    return turmaDTO1;
+                }).collect(Collectors.toList());
     }
 
     @Override

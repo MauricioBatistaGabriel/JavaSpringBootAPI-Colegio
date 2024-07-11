@@ -23,12 +23,12 @@ public class AlunoController {
 
     @GetMapping("{id}")
     public CompleteAlunoDTO findById(@PathVariable Integer id){
-        return alunoService.findByID(id);
+        return alunoService.findById(id);
     }
 
     @GetMapping
-    public List<Aluno> filterAll(@RequestBody Aluno aluno){
-        return alunoService.filterAll(aluno);
+    public List<CompleteAlunoDTO> filterAll(@RequestBody CompleteAlunoDTO alunoDTO){
+        return alunoService.filterAll(alunoDTO);
     }
 
     @PutMapping("{id}")

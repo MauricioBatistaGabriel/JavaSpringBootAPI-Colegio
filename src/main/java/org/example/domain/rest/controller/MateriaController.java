@@ -28,8 +28,8 @@ public class MateriaController {
     }
 
     @GetMapping
-    public List<Materia> filterAll(@RequestBody Materia materia){
-        return materiaService.filterAll(materia);
+    public List<CompleteMateriaDTO> filterAll(@RequestBody CompleteMateriaDTO materiaDTO){
+        return materiaService.filterAll(materiaDTO);
     }
 
     @PutMapping("{id}")

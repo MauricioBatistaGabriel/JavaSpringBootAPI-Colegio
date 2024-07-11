@@ -9,7 +9,7 @@ public interface SalaService {
 
     Integer save(CompleteSalaDTO salaDTO);
     CompleteSalaDTO findById(Integer id);
-    List<Sala> filterAll(Sala sala);
+    List<CompleteSalaDTO> filterAll(CompleteSalaDTO salaDTO);
     Sala update(Integer id, Sala sala);
     void deleteById(Integer id);
 }

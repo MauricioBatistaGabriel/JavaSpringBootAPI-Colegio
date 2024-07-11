@@ -12,7 +12,7 @@ public interface ProfessorService {
     Integer save(CompleteProfessorDTO professorDTO);
     ReturnProfessorDTO findById(Integer id);
     List<ReturnAulaInProfessorDTO> findAulaByIdProfessor(Integer id);
-    List<Professor> filterAll(Professor professor);
+    List<ReturnProfessorDTO> filterAll(CompleteProfessorDTO professorDTO);
     Professor update(Integer id, Professor professor);
     void deleteById(Integer id);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SalaServiceImpl implements SalaService {
@@ -34,15 +35,22 @@ public class SalaServiceImpl implements SalaService {
     }
 
     @Override
-    public List<Sala> filterAll(Sala sala) {
+    public List<CompleteSalaDTO> filterAll(CompleteSalaDTO salaDTO) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
                 .withStringMatcher(
                         ExampleMatcher.StringMatcher.CONTAINING
                 );
+
+        Sala sala = new Sala(salaDTO.getSala());
+
         Example example = Example.of(sala, matcher);
-        return salaRepository.findAll(example);
+        List<Sala> salas = salaRepository.findAll(example);
+
+        return salas.stream()
+                .map( sala1 -> new CompleteSalaDTO(sala1.getSala()))
+                .collect(Collectors.toList());
     }
 
     @Override

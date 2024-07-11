@@ -8,7 +8,8 @@ public interface MateriaService {
 
     Integer save(CompleteMateriaDTO materiaDTO);
     CompleteMateriaDTO findByID(Integer id);
-    List<Materia> filterAll(Materia materia);
+    List<CompleteMateriaDTO> findMateriasByIdTurma(Integer id);
+    List<CompleteMateriaDTO> filterAll(CompleteMateriaDTO materiaDTO);
     Materia update(Integer id, Materia materia);
     void deleteByID(Integer id);
 }

@@ -9,9 +9,11 @@ public interface AlunoService {
 
     Integer save(CompleteAlunoDTO alunoDTO);
 
-    CompleteAlunoDTO findByID(Integer id);
+    CompleteAlunoDTO findById(Integer id);
+    CompleteAlunoDTO findAlunoByIdNota(Integer id);
 
-    List<Aluno> filterAll(Aluno aluno);
+
+    List<CompleteAlunoDTO> filterAll(CompleteAlunoDTO alunoDTO);
 
     Aluno update(Integer id, Aluno aluno);
 

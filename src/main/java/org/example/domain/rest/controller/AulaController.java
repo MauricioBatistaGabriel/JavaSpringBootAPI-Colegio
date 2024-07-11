@@ -29,8 +29,8 @@ public class AulaController {
     }
 
     @GetMapping
-    public List<Aula> filterAll(@RequestBody Aula aula){
-        return aulaService.filterAll(aula);
+    public List<ReturnAulaDTO> filterAll(@RequestBody CompleteAulaDTO aulaDTO){
+        return aulaService.filterAll(aulaDTO );
     }
 
     @PutMapping("{id}")
