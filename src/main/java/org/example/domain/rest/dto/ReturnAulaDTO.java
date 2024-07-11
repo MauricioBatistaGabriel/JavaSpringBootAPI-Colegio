@@ -12,5 +12,5 @@ public class ReturnAulaDTO {
     private String data;
     private ReturnProfessorDTO professor;
     private CompleteMateriaDTO materia;
-    private ReturnTurmaInAulaDTO turma;
+    private ReturnTurmaInOtherClassDTO turma;
 }

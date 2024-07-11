@@ -35,8 +35,8 @@ public class ProfessorController {
     }
 
     @GetMapping
-    public List<Professor> filterAll(@RequestBody Professor professor){
-        return professorService.filterAll(professor);
+    public List<ReturnProfessorDTO> filterAll(@RequestBody CompleteProfessorDTO professorDTO){
+        return professorService.filterAll(professorDTO);
     }
 
     @PutMapping("{id}")

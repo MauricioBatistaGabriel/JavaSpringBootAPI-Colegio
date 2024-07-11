@@ -12,4 +12,6 @@ public class CompleteAvaliacaoDTO {
     private Integer numeroAvaliacao;
 
     private Integer materia;
+
+    private Integer turma;
 }

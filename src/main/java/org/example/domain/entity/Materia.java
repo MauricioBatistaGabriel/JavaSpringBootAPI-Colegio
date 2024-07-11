@@ -16,8 +16,6 @@ public class Materia {
     @Column(name = "id_materia")
     private Integer id;
 
-    @NotEmpty(message = "{campo.nome-materia}")
-    @Size(min = 2, max = 40, message = "{campo.nome-materia.validation}")
     private String nome;
 
     public Materia(String nome) {

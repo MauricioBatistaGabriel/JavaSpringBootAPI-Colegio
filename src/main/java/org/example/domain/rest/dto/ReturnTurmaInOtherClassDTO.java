@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReturnTurmaInAulaDTO {
+public class ReturnTurmaInOtherClassDTO {
 
     private String nome;
 

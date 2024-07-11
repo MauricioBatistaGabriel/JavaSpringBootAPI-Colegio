@@ -28,8 +28,8 @@ public class AvaliacaoController {
     }
 
     @GetMapping
-    public List<Avaliacao> filterAll(@RequestBody Avaliacao avaliacao){
-        return avaliacaoService.filterAll(avaliacao);
+    public List<ReturnAvaliacaoDTO> filterAll(@RequestBody CompleteAvaliacaoDTO avaliacaoDTO){
+        return avaliacaoService.filterAll(avaliacaoDTO);
     }
 
     @PutMapping("{id}")

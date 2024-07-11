@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfessorServiceImpl implements org.example.domain.service.ProfessorService {
@@ -89,7 +90,7 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
     }
 
     @Override
-    public List<Professor> filterAll(Professor professor) {
+    public List<ReturnProfessorDTO> filterAll(CompleteProfessorDTO professorDTO) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
                 .withIgnoreCase()
@@ -97,8 +98,14 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
                         ExampleMatcher.StringMatcher.CONTAINING
                 );
 
+        Professor professor = new Professor(professorDTO.getNome(), professorDTO.getCpf());
+
         Example example = Example.of(professor, matcher);
-        return professorRepository.findAll(example);
+        List<Professor> professores = professorRepository.findAll(example);
+
+        return professores.stream()
+                .map( professor1 -> new ReturnProfessorDTO(professor1.getNome(), professor1.getCpf()))
+                .collect(Collectors.toList());
     }
 
     @Override

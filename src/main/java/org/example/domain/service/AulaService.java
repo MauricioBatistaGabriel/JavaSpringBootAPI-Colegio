@@ -10,7 +10,7 @@ public interface AulaService {
 
     Integer save(CompleteAulaDTO aulaDTO);
     ReturnAulaDTO findById(Integer id);
-    List<Aula> filterAll(Aula aula);
+    List<ReturnAulaDTO> filterAll(CompleteAulaDTO aulaDTO);
     Aula update(Integer id, Aula aula);
     void deleteById(Integer id);
 }

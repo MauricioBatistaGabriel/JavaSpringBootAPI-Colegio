@@ -30,8 +30,8 @@ public class SalaController {
     }
 
     @GetMapping
-    public List<Sala> filterAll(@RequestBody Sala sala){
-        return salaService.filterAll(sala);
+    public List<CompleteSalaDTO> filterAll(@RequestBody CompleteSalaDTO salaDTO){
+        return salaService.filterAll(salaDTO);
     }
 
     @PutMapping("{id}")

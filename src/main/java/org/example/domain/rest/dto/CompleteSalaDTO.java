@@ -11,7 +11,5 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class CompleteSalaDTO {
 
-    @Size(min = 1, max = 5, message = "{campo.sala.validation}")
-    @NotEmpty(message = "{campo.sala}")
     private String sala;
 }

@@ -9,6 +9,4 @@ import java.util.List;
 public interface MateriaTurmaService {
 
     Integer save(CompleteMateriaTurmaDTO materiaTurmaDTO);
-
-    List<CompleteMateriaDTO> findMateriasByIdTurma(Integer id);
 }

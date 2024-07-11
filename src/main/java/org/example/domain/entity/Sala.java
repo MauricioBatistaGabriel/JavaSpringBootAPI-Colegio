@@ -18,8 +18,6 @@ public class Sala {
     @Column(name = "id_sala")
     private Integer id;
 
-    @Size(min = 1, max = 5, message = "{campo.sala.validation}")
-    @NotEmpty(message = "{campo.sala}")
     @Column(name = "numero_sala")
     private String sala;
 

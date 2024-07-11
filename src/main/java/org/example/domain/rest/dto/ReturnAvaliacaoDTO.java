@@ -12,4 +12,6 @@ public class ReturnAvaliacaoDTO {
     private Integer numeroAvaliacao;
 
     private CompleteMateriaDTO materia;
+
+    private ReturnTurmaInOtherClassDTO turma;
 }

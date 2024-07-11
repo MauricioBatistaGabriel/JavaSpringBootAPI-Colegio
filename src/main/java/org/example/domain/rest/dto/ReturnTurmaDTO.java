@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class ReturnTurmaDTO {
 
     private String nome;
@@ -16,4 +15,9 @@ public class ReturnTurmaDTO {
     private CompleteSalaDTO sala;
 
     private List<CompleteMateriaDTO> materias;
+
+    public ReturnTurmaDTO() {
+        CompleteSalaDTO salaDTO = new CompleteSalaDTO();
+        this.sala = salaDTO;
+    }
 }

@@ -29,8 +29,8 @@ public class TurmaController {
     }
 
     @GetMapping
-    public List<Turma> filterAll(@RequestBody Turma turma){
-        return turmaService.filterAll(turma);
+    public List<ReturnTurmaDTO> filterAll(CompleteTurmaDTO turmaDTO){
+        return turmaService.filterAll(turmaDTO);
     }
 
     @PutMapping("{id}")
