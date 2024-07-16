@@ -10,7 +10,8 @@ public interface AvaliacaoService {
 
     Integer save(CompleteAvaliacaoDTO avaliacaoDTO);
     ReturnAvaliacaoDTO findById(Integer id);
-    ReturnAvaliacaoDTO findAvaliacaoByIdNota(Integer id);
+    ReturnAvaliacaoDTO findAvaliacaoByNotaId(Integer id);
+    List<Avaliacao> findAvaliacoesByMateriaId(Integer id);
     List<ReturnAvaliacaoDTO> filterAll(CompleteAvaliacaoDTO avaliacaoDTO);
     Avaliacao update(Integer id, Avaliacao avaliacao);
     void deleteById(Integer id);

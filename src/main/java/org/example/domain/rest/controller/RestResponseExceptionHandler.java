@@ -1,5 +1,6 @@
 package org.example.domain.rest.controller;
 
+import org.example.domain.exception.RegraNegocioException;
 import org.example.domain.rest.ApiError;
 import static org.springframework.http.HttpStatus.*;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,14 @@ public class RestResponseExceptionHandler {
         ApiError apiError =
                 new ApiError(NOT_FOUND, ex.getLocalizedMessage(),
                         "Erro 001");
+        return new ResponseEntity<>(apiError, apiError.getStatus());
+    }
+
+    @ExceptionHandler(value = { RegraNegocioException.class })
+    protected ResponseEntity<Object> handleRegraNegocioException(RegraNegocioException ex) {
+        ApiError apiError =
+                new ApiError(CONFLICT, ex.getLocalizedMessage(),
+                        "ErrorRegraNegocio");
         return new ResponseEntity<>(apiError, apiError.getStatus());
     }
 }

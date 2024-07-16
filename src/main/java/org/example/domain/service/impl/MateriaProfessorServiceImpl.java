@@ -8,9 +8,11 @@ import org.example.domain.repository.MateriaRepository;
 import org.example.domain.repository.ProfessorRepository;
 import org.example.domain.rest.dto.CompleteMateriaProfessorDTO;
 import org.example.domain.service.MateriaProfessorService;
+import org.example.domain.service.MateriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 public class MateriaProfessorServiceImpl implements MateriaProfessorService {
@@ -37,5 +39,25 @@ public class MateriaProfessorServiceImpl implements MateriaProfessorService {
 
         MateriaProfessor materiaProfessor = new MateriaProfessor(materia1, professor1);
         return materiaProfessorRepository.save(materiaProfessor).getId();
+    }
+
+    @Override
+    public List<MateriaProfessor> findMateriaProfessorByIdMateria(Integer id) {
+        return materiaRepository.findById(id)
+                .map( materia -> {
+                    List<MateriaProfessor> materiaProfessorList = materiaProfessorRepository.findByMateriaId(materia.getId());
+                    return materiaProfessorList;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public List<MateriaProfessor> findMateriaProfessorByIdProfessor(Integer id) {
+        return professorRepository.findById(id)
+                .map( professor -> {
+                    List<MateriaProfessor> materiaProfessorList = materiaProfessorRepository.findByProfessorId(professor.getId());
+                    return materiaProfessorList;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Professor com o ID:" + id + " não encontrado"));
     }
 }

@@ -77,7 +77,7 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     }
 
     @Override
-    public ReturnAvaliacaoDTO findAvaliacaoByIdNota(Integer id) {
+    public ReturnAvaliacaoDTO findAvaliacaoByNotaId(Integer id) {
         return notaRepository.findById(id)
                 .map( nota -> {
                     Avaliacao avaliacao = notaRepository.findAvalicaoByIdNota(nota.getId());
@@ -85,6 +85,16 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
                     return avaliacaoDTO;
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Nota com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public List<Avaliacao> findAvaliacoesByMateriaId(Integer id) {
+        return materiaRepository.findById(id)
+                .map( materia -> {
+                    List<Avaliacao> avaliacaoList = avaliacaoRepository.findByMateriaId(materia.getId());
+                    return  avaliacaoList;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Avaliação com o ID:" + id + " não encontrada"));
     }
 
     @Override

@@ -1,18 +1,23 @@
 package org.example.domain.service.impl;
 
-import org.example.domain.entity.Materia;
-import org.example.domain.repository.MateriaRepository;
-import org.example.domain.repository.MateriaTurmaRepository;
-import org.example.domain.repository.TurmaRepository;
+import org.example.domain.entity.*;
+import org.example.domain.exception.RegraNegocioException;
+import org.example.domain.repository.*;
 import org.example.domain.rest.dto.CompleteMateriaDTO;
+import org.example.domain.rest.dto.ReturnProfessorDTO;
+import org.example.domain.service.AvaliacaoService;
+import org.example.domain.service.MateriaProfessorService;
 import org.example.domain.service.MateriaService;
+import org.example.domain.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +31,24 @@ public class MateriaServiceImpl implements MateriaService {
 
     @Autowired
     private MateriaTurmaRepository materiaTurmaRepository;
+
+    @Autowired
+    private MateriaProfessorRepository materiaProfessorRepository;
+
+    @Autowired
+    private MateriaProfessorService materiaProfessorService;
+
+    @Autowired
+    private ProfessorRepository professorRepository;
+
+    @Autowired
+    private ProfessorService professorService;
+
+    @Autowired
+    private AvaliacaoRepository avaliacaoRepository;
+
+    @Autowired
+    private AvaliacaoService avaliacaoService;
 
     @Override
     public Integer save(CompleteMateriaDTO materiaDTO) {
@@ -91,13 +114,42 @@ public class MateriaServiceImpl implements MateriaService {
 
     @Override
     public void deleteByID(Integer id) {
-        materiaRepository.findById(id)
-                .map( materia -> {
+        Materia materia = materiaRepository.findById(id)
+                .orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
 
+        //VALIDA SE MATÉRIA POSSUI RELAÇÃO COM PROFESSOR
+        List<MateriaProfessor> materiaProfessorList = materiaProfessorService.findMateriaProfessorByIdMateria(materia.getId());
+       if(!materiaProfessorList.isEmpty()){
+           List<String> nomeProfessores = new ArrayList<>();
 
+           materiaProfessorList.forEach(materiaProfessor ->
+                   nomeProfessores.add(materiaProfessor.getProfessor().getNome()));
 
-                    materiaRepository.deleteById(id);
-                    return Void.TYPE;
-                }).orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+           throw new RegraNegocioException("Matéria não pode ser excluida, pois os professores: " + nomeProfessores.toString() + " possuem relação com matéria");
+       }
+
+       //VALIDA SE MATÉRIA POSSUI RELAÇÃO COM TURMA
+        List<MateriaTurma> materiaTurmaList = materiaTurmaRepository.findByMateriaId(id);
+        if (!materiaTurmaList.isEmpty()){
+            List<String> nomeTurmas = new ArrayList<>();
+
+            materiaTurmaList.forEach(materiaTurma ->
+                    nomeTurmas.add(materiaTurma.getMateria().getNome()));
+
+            throw new RegraNegocioException("Matéria não pode ser excluida, pois as turmas: " + nomeTurmas.toString() + " possuem relação com matéria");
+        }
+
+        // VALIDA SE MATÉRIA POSSUI RELAÇÃO COM AVALIAÇÃO
+        List<Avaliacao> avaliacaoList = avaliacaoService.findAvaliacoesByMateriaId(materia.getId());
+        if (!avaliacaoList.isEmpty()){
+            List<Integer> idAvaliação = new ArrayList<>();
+
+            avaliacaoList.forEach(avaliacao ->
+                    idAvaliação.add(avaliacao.getId()));
+
+            throw new RegraNegocioException("Matéria não pode ser excluida, pois as turmas com ID: " + idAvaliação + " possuem relação com matéria");
+        }
+
+        materiaRepository.deleteById(id);
     }
 }

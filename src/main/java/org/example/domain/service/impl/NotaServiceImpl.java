@@ -60,7 +60,7 @@ public class NotaServiceImpl implements NotaService {
     public ReturnNotaDTO findById(Integer id) {
         return notaRepository.findById(id)
                 .map( nota -> {
-                    ReturnAvaliacaoDTO avaliacaoDTO = avaliacaoService.findAvaliacaoByIdNota(nota.getId());
+                    ReturnAvaliacaoDTO avaliacaoDTO = avaliacaoService.findAvaliacaoByNotaId(nota.getId());
 
                     CompleteAlunoDTO alunoDTO = alunoService.findAlunoByIdNota(nota.getId());
 

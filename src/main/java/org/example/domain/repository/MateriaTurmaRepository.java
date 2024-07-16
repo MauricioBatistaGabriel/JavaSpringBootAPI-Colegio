@@ -11,4 +11,8 @@ public interface MateriaTurmaRepository extends JpaRepository<MateriaTurma, Inte
 
     @Query("SELECT mt.materia FROM MateriaTurma mt WHERE mt.turma.id = :id")
     List<Materia> findMateriasByIdTurma(@Param("id") Integer id);
+
+    List<MateriaTurma> findByMateriaId(@Param("id") Integer id);
+
+    List<MateriaTurma> findByTurmaId(@Param("id") Integer id);
 }
