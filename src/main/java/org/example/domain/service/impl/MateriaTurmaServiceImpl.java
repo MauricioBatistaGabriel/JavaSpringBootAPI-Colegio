@@ -43,4 +43,24 @@ public class MateriaTurmaServiceImpl implements MateriaTurmaService{
         MateriaTurma materiaTurma = new MateriaTurma(materia1, turma1);
         return materiaTurmaRepository.save(materiaTurma).getId();
     }
+
+    @Override
+    public List<MateriaTurma> findMateriaTurmaByIdMateria(Integer id) {
+        return materiaRepository.findById(id)
+                .map( materia -> {
+                    List<MateriaTurma> materiaTurmaList = materiaTurmaRepository.findByMateriaId(materia.getId());
+                    return materiaTurmaList;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public List<MateriaTurma> findMateriaTurmaByIdTurma(Integer id) {
+        return turmaRepository.findById(id)
+                .map( turma -> {
+                    List<MateriaTurma> materiaTurmaList = materiaTurmaRepository.findByTurmaId(turma.getId());
+                    return materiaTurmaList;
+                }).orElseThrow( () ->
+                        new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+    }
 }
