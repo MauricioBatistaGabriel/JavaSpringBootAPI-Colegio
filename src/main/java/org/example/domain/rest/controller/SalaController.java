@@ -26,7 +26,7 @@ public class SalaController {
 
     @GetMapping("{id}")
     public CompleteSalaDTO findById(@PathVariable Integer id){
-        return salaService.findById(id);
+        return salaService.findByIdReturnDTO(id);
     }
 
     @GetMapping

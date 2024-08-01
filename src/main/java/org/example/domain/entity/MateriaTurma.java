@@ -24,6 +24,8 @@ public class MateriaTurma {
     @JoinColumn(name = "id_turma")
     private Turma turma;
 
+    private boolean isPresent = true;
+
     public MateriaTurma(Materia materia, Turma turma) {
         this.materia = materia;
         this.turma = turma;

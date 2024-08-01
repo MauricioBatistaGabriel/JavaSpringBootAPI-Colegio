@@ -25,13 +25,26 @@ public class SalaServiceImpl implements SalaService {
     }
 
     @Override
-    public CompleteSalaDTO findById(Integer id) {
+    public Sala findById(Integer id) {
         return salaRepository.findById(id)
                 .map( sala -> {
-                    CompleteSalaDTO salaDTO = new CompleteSalaDTO(sala.getSala());
-                    return salaDTO;
+                    if (sala.isPresent() == true) {
+                        return sala;
+                    }
+                    else {
+                        throw new EntityNotFoundException("Sala com o ID:" + id + " foi deletada");
+                    }
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Sala com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public CompleteSalaDTO findByIdReturnDTO(Integer id) {
+        Sala sala = findById(id);
+
+        CompleteSalaDTO salaDTO = new CompleteSalaDTO(sala.getSala());
+
+        return salaDTO;
     }
 
     @Override
@@ -55,21 +68,17 @@ public class SalaServiceImpl implements SalaService {
 
     @Override
     public Sala update(Integer id, Sala sala) {
-        return salaRepository.findById(id)
-                .map( sala1 -> {
-                    sala.setId(sala1.getId());
-                    return salaRepository.save(sala);
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Sala com o ID:" + id + " não encontrada"));
+        Sala sala1 = findById(id);
+
+        sala.setId(sala1.getId());
+
+        return salaRepository.save(sala);
     }
 
     @Override
     public void deleteById(Integer id) {
-        salaRepository.findById(id)
-                .map( sala -> {
-                    salaRepository.deleteById(id);
-                    return Void.TYPE;
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Sala com o ID:" + id + " não encontrada"));
+        Sala sala = findById(id);
+
+        salaRepository.deleteById(sala.getId());
     }
 }

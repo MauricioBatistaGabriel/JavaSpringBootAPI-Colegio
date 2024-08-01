@@ -24,6 +24,8 @@ public class MateriaProfessor {
     @JoinColumn(name = "id_professor")
     private Professor professor;
 
+    private boolean isPresent = true;
+
     public MateriaProfessor(Materia materia, Professor professor) {
         this.materia = materia;
         this.professor = professor;

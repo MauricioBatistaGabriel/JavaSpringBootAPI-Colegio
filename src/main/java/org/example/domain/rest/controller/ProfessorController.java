@@ -26,7 +26,7 @@ public class ProfessorController {
 
     @GetMapping("{id}")
     public ReturnProfessorDTO findById(@PathVariable Integer id){
-        return professorService.findById(id);
+        return professorService.findByIdReturnDTO(id);
     }
 
     @GetMapping("/aulas/{id}")

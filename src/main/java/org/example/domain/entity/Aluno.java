@@ -22,6 +22,8 @@ public class Aluno {
 
     private String idade;
 
+    private boolean isPresent = true;
+
     public Aluno(String nome, String cpf, String idade) {
         this.nome = nome;
         this.cpf = cpf;

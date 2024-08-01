@@ -23,6 +23,8 @@ public class Avaliacao {
     @JoinColumn(name = "id_materia")
     private Materia materia;
 
+    private boolean isPresent = true;
+
     public Avaliacao(Integer numeroAvaliacao, Materia materia) {
         this.numeroAvaliacao = numeroAvaliacao;
         this.materia = materia;

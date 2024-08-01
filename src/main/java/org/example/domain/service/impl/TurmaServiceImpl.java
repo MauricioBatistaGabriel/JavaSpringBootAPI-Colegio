@@ -1,5 +1,7 @@
 package org.example.domain.service.impl;
 
+import org.example.domain.entity.Aluno;
+import org.example.domain.entity.Materia;
 import org.example.domain.entity.Sala;
 import org.example.domain.entity.Turma;
 import org.example.domain.repository.*;
@@ -39,6 +41,9 @@ public class TurmaServiceImpl implements TurmaService {
     private AlunoRepository alunoRepository;
 
     @Autowired
+    private AlunoService alunoService;
+
+    @Autowired
     private AlunoTurmaService alunoTurmaService;
 
     @Autowired
@@ -47,11 +52,7 @@ public class TurmaServiceImpl implements TurmaService {
     @Override
     @Transactional
     public Integer save(CompleteTurmaDTO turmaDTO) {
-
-        Sala sala = salaRepository.findById(turmaDTO.getSala())
-                .orElseThrow( () ->
-                        new EntityNotFoundException("Sala com ID:" + turmaDTO.getSala() + " não encontrada"));
-
+        Sala sala = salaService.findById(turmaDTO.getSala());
 
         Turma turma = new Turma(turmaDTO.getNome(), sala);
         Turma turma1 = turmaRepository.save(turma);
@@ -60,13 +61,11 @@ public class TurmaServiceImpl implements TurmaService {
         if (turmaDTO.getAlunos().size() != 0){
 
             for(Integer index = 0; index < turmaDTO.getAlunos().size(); index++){
-                alunoRepository.findById(turmaDTO.getAlunos().get(index))
-                        .map( aluno -> {
-                            CompleteAlunoTurmaDTO alunoTurmaDTO = new CompleteAlunoTurmaDTO(aluno.getId(), turma1.getId());
-                            alunoTurmaService.save(alunoTurmaDTO);
-                            return Void.TYPE;
-                        }).orElseThrow( () ->
-                                new EntityNotFoundException("A turma não pode ser criada, algum aluno não existe: " + turmaDTO.getMaterias()));
+                Aluno aluno = alunoService.findById(turmaDTO.getAlunos().get(index));
+
+                CompleteAlunoTurmaDTO alunoTurmaDTO = new CompleteAlunoTurmaDTO(aluno.getId(), turma1.getId());
+
+                alunoTurmaService.save(alunoTurmaDTO);
             }
 
         }
@@ -78,13 +77,11 @@ public class TurmaServiceImpl implements TurmaService {
         if (turmaDTO.getMaterias().size() != 0){
 
             for(Integer index = 0; index < turmaDTO.getMaterias().size(); index++){
-                materiaRepository.findById(turmaDTO.getMaterias().get(index))
-                        .map( materia -> {
-                            CompleteMateriaTurmaDTO materiaTurmaDTO = new CompleteMateriaTurmaDTO(materia.getId(), turma1.getId());
-                            materiaTurmaService.save(materiaTurmaDTO);
-                            return Void.TYPE;
-                        }).orElseThrow( () ->
-                                new EntityNotFoundException("A turma não pode ser criada, a matéria com ID:" + turmaDTO.getMaterias() + " não existe"));
+                Materia materia = materiaService.findById(turmaDTO.getMaterias().get(index));
+
+                CompleteMateriaTurmaDTO materiaTurmaDTO = new CompleteMateriaTurmaDTO(materia.getId(), turma1.getId());
+
+                materiaTurmaService.save(materiaTurmaDTO);
             }
 
         }
@@ -96,24 +93,38 @@ public class TurmaServiceImpl implements TurmaService {
     }
 
     @Override
-    public ReturnTurmaDTO findById(Integer id) {
+    public Turma findById(Integer id) {
         return turmaRepository.findById(id)
                 .map( turma -> {
-                    ReturnTurmaDTO informacoesTurmaDTO = new ReturnTurmaDTO(turma.getNome(), salaService.findById(turma.getSala().getId()), materiaService.findMateriasByIdTurma(id));
-                    return informacoesTurmaDTO;
+                    if (turma.isPresent() == true) {
+                        return turma;
+                    }
+                    else {
+                        throw new EntityNotFoundException("Turma com o ID:" + id + " foi deletada");
+                    }
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Turma com ID:" + id + " não encontrada"));
     }
 
     @Override
+    public ReturnTurmaDTO findByIdReturnDTO(Integer id) {
+        Turma turma = findById(id);
+
+        CompleteSalaDTO salaDTO = salaService.findByIdReturnDTO(turma.getSala().getId());
+        List<CompleteMateriaDTO> materiaDTOS = materiaService.findMateriasByIdTurma(turma.getId());
+        ReturnTurmaDTO turmaDTO = new ReturnTurmaDTO(turma.getNome(), salaDTO, materiaDTOS);
+
+        return turmaDTO;
+    }
+
+    @Override
     public ReturnTurmaInOtherClassDTO findByIdTurmaInOtherClass(Integer id) {
-        return turmaRepository.findById(id)
-                .map( turma -> {
-                    CompleteSalaDTO salaDTO = new CompleteSalaDTO(turma.getSala().getSala());
-                    ReturnTurmaInOtherClassDTO turmaDTO = new ReturnTurmaInOtherClassDTO(turma.getNome(), salaDTO);
-                    return turmaDTO;
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+        Turma turma = findById(id);
+
+        CompleteSalaDTO salaDTO = new CompleteSalaDTO(turma.getSala().getSala());
+        ReturnTurmaInOtherClassDTO turmaDTO = new ReturnTurmaInOtherClassDTO(turma.getNome(), salaDTO);
+
+        return turmaDTO;
     }
 
     @Override
@@ -135,7 +146,7 @@ public class TurmaServiceImpl implements TurmaService {
                 );
 
         CompleteSalaDTO salaDTO = (turmaDTO.getSala() != null) ?
-                salaService.findById(turmaDTO.getSala()) :
+                salaService.findByIdReturnDTO(turmaDTO.getSala()) :
                 new CompleteSalaDTO();
         Sala sala = new Sala(salaDTO.getSala());
 
@@ -146,28 +157,24 @@ public class TurmaServiceImpl implements TurmaService {
 
         return turmas.stream()
                 .map( turma1 -> {
-                    ReturnTurmaDTO turmaDTO1 = findById(turma1.getId());
+                    ReturnTurmaDTO turmaDTO1 = findByIdReturnDTO(turma1.getId());
                     return turmaDTO1;
                 }).collect(Collectors.toList());
     }
 
     @Override
     public Turma update(Integer id, Turma turma) {
-        return turmaRepository.findById(id)
-                .map( turma1 -> {
-                    turma.setId(turma1.getId());
-                    return turmaRepository.save(turma);
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+        Turma turma1 = findById(id);
+
+        turma.setId(turma1.getId());
+
+        return turmaRepository.save(turma);
     }
 
     @Override
     public void deleteById(Integer id) {
-        turmaRepository.findById(id)
-                .map( turma -> {
-                    turmaRepository.deleteById(id);
-                    return Void.TYPE;
-                }).orElseThrow( ()
-                        -> new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+        Turma turma = findById(id);
+
+        turmaRepository.deleteById(turma.getId());
     }
 }

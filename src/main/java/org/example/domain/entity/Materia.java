@@ -19,6 +19,8 @@ public class Materia {
 
     private String nome;
 
+    private boolean isPresent = true;
+
     public Materia(String nome) {
         this.nome = nome;
     }

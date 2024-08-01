@@ -7,6 +7,7 @@ import org.example.domain.repository.MateriaRepository;
 import org.example.domain.repository.ProfessorRepository;
 import org.example.domain.rest.dto.*;
 import org.example.domain.service.MateriaProfessorService;
+import org.example.domain.service.MateriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -30,6 +31,9 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
     private MateriaRepository materiaRepository;
 
     @Autowired
+    private MateriaService materiaService;
+
+    @Autowired
     private MateriaProfessorService materiaProfessorService;
 
     @Override
@@ -41,13 +45,11 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
         if (professorDTO.getMaterias().size() != 0){
 
             for(Integer index = 0; index < professorDTO.getMaterias().size(); index++){
-                materiaRepository.findById(professorDTO.getMaterias().get(index))
-                        .map( materia -> {
-                            CompleteMateriaProfessorDTO materiaProfessorDTO = new CompleteMateriaProfessorDTO(materia.getId(), professor1.getId());
-                            materiaProfessorService.save(materiaProfessorDTO);
-                            return Void.TYPE;
-                        }).orElseThrow( () ->
-                                new EntityNotFoundException("O professor não pode ser criado, alguma matéria não existe, ID's:" + professorDTO.getMaterias()));
+                Materia materia = materiaService.findById(professorDTO.getMaterias().get(index));
+
+                CompleteMateriaProfessorDTO materiaProfessorDTO = new CompleteMateriaProfessorDTO(materia.getId(), professor1.getId());
+
+                materiaProfessorService.save(materiaProfessorDTO);
             }
 
         }
@@ -59,13 +61,26 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
     }
 
     @Override
-    public ReturnProfessorDTO findById(Integer id) {
+    public Professor findById(Integer id) {
         return professorRepository.findById(id)
-            .map(professor -> {
-                ReturnProfessorDTO professorDTO = new ReturnProfessorDTO(professor.getNome(), professor.getCpf());
-                return professorDTO;
-            }).orElseThrow( () ->
+                .map( professor -> {
+                    if (professor.isPresent() == true){
+                        return professor;
+                    }
+                    else {
+                        throw new EntityNotFoundException("Professor com o ID:" + id + " foi deletado");
+                    }
+                }).orElseThrow( () ->
                         new EntityNotFoundException("Professor com o ID:" + id + " não encontrado"));
+    }
+
+    @Override
+    public ReturnProfessorDTO findByIdReturnDTO(Integer id) {
+        Professor professor = findById(id);
+
+        ReturnProfessorDTO professorDTO = new ReturnProfessorDTO(professor.getNome(), professor.getCpf());
+
+        return professorDTO;
     }
 
     @Override
@@ -110,20 +125,17 @@ public class ProfessorServiceImpl implements org.example.domain.service.Professo
 
     @Override
     public Professor update(Integer id, Professor professor) {
-        return professorRepository.findById(id)
-                .map( professor1 -> {
-                    professor.setId(professor1.getId());
-                    return professorRepository.save(professor);
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Professor com o ID:" + id + " não existe"));
+        Professor professor1 = findById(id);
+
+        professor.setId(professor1.getId());
+
+        return professorRepository.save(professor);
     }
 
     @Override
     public void deleteById(Integer id) {
-        professorRepository.findById(id)
-            .map( professor -> {
-                professorRepository.deleteById(id);
-                return Void.TYPE;
-            }).orElseThrow( () -> new EntityNotFoundException("Professor com ID:" + id + " não encontrado"));
+        Professor professor = findById(id);
+
+        professorRepository.deleteById(professor.getId());
     }
 }

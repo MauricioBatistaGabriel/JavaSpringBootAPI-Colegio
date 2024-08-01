@@ -4,20 +4,14 @@ import org.example.domain.entity.*;
 import org.example.domain.exception.RegraNegocioException;
 import org.example.domain.repository.*;
 import org.example.domain.rest.dto.CompleteMateriaDTO;
-import org.example.domain.rest.dto.ReturnProfessorDTO;
-import org.example.domain.service.AvaliacaoService;
-import org.example.domain.service.MateriaProfessorService;
-import org.example.domain.service.MateriaService;
-import org.example.domain.service.ProfessorService;
+import org.example.domain.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,10 +21,19 @@ public class MateriaServiceImpl implements MateriaService {
     private MateriaRepository materiaRepository;
 
     @Autowired
+    private MateriaService materiaService;
+
+    @Autowired
     private TurmaRepository turmaRepository;
 
     @Autowired
+    private TurmaService turmaService;
+
+    @Autowired
     private MateriaTurmaRepository materiaTurmaRepository;
+
+    @Autowired
+    private MateriaTurmaService materiaTurmaService;
 
     @Autowired
     private MateriaProfessorRepository materiaProfessorRepository;
@@ -58,30 +61,42 @@ public class MateriaServiceImpl implements MateriaService {
     }
 
     @Override
-    public CompleteMateriaDTO findByID(Integer id) {
+    public Materia findById(Integer id) {
         return materiaRepository.findById(id)
                 .map( materia -> {
-                    CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(materia.getNome());
-                    return materiaDTO;
+                    if (materia.isPresent() == true){
+                        return materia;
+                    }
+                    else {
+                    throw new EntityNotFoundException("Matéria com o ID:" + id + " foi deletada");
+                    }
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
     }
 
     @Override
+    public CompleteMateriaDTO findByIdReturnDTO(Integer id) {
+        Materia materia = findById(id);
+
+        CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(materia.getNome());
+
+        return materiaDTO;
+    }
+
+    @Override
     public List<CompleteMateriaDTO> findMateriasByIdTurma(Integer id) {
-        return turmaRepository.findById(id)
-                .map( turma -> {
-                    List<Materia> materias = materiaTurmaRepository.findMateriasByIdTurma(id);
-                    List<CompleteMateriaDTO> materiasDTO = new ArrayList<>();
+        Turma turma = turmaService.findById(id);
 
-                    for (Integer i = 0; i < materias.size(); i++){
-                        CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(materias.get(i).getNome());
-                        materiasDTO.add(materiaDTO);
-                    }
+        List<Materia> materias = materiaTurmaRepository.findMateriasByIdTurma(turma.getId());
 
-                    return materiasDTO;
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Turma com o ID:" + id + " não encontrada"));
+        List<CompleteMateriaDTO> materiasDTO = new ArrayList<>();
+
+        for (Integer i = 0; i < materias.size(); i++){
+            CompleteMateriaDTO materiaDTO = new CompleteMateriaDTO(materias.get(i).getNome());
+            materiasDTO.add(materiaDTO);
+        }
+
+        return materiasDTO;
     }
 
     @Override
@@ -105,17 +120,15 @@ public class MateriaServiceImpl implements MateriaService {
 
     @Override
     public Materia update(Integer id, Materia materia) {
-        return materiaRepository.findById(id)
-                .map( materia1 -> {
-                    materia.setId(materia1.getId());
-                    return materiaRepository.save(materia);
-                }).orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+        Materia materia1 = findById(id);
+        materia.setId(materia1.getId());
+
+        return materiaRepository.save(materia);
     }
 
     @Override
-    public void deleteByID(Integer id) {
-        Materia materia = materiaRepository.findById(id)
-                .orElseThrow( () -> new EntityNotFoundException("Matéria com o ID:" + id + " não encontrada"));
+    public void deleteById(Integer id) {
+        Materia materia = materiaService.findById(id);
 
         //VALIDA SE MATÉRIA POSSUI RELAÇÃO COM PROFESSOR
         List<MateriaProfessor> materiaProfessorList = materiaProfessorService.findMateriaProfessorByIdMateria(materia.getId());
@@ -129,7 +142,7 @@ public class MateriaServiceImpl implements MateriaService {
        }
 
        //VALIDA SE MATÉRIA POSSUI RELAÇÃO COM TURMA
-        List<MateriaTurma> materiaTurmaList = materiaTurmaRepository.findByMateriaId(id);
+        List<MateriaTurma> materiaTurmaList = materiaTurmaService.findMateriaTurmaByMateriaId(materia.getId());
         if (!materiaTurmaList.isEmpty()){
             List<String> nomeTurmas = new ArrayList<>();
 
@@ -150,6 +163,7 @@ public class MateriaServiceImpl implements MateriaService {
             throw new RegraNegocioException("Matéria não pode ser excluida, pois as turmas com ID: " + idAvaliação + " possuem relação com matéria");
         }
 
-        materiaRepository.deleteById(id);
+        materia.setPresent(false);
+        materiaRepository.save(materia);
     }
 }

@@ -10,7 +10,8 @@ import java.util.List;
 public interface ProfessorService {
 
     Integer save(CompleteProfessorDTO professorDTO);
-    ReturnProfessorDTO findById(Integer id);
+    Professor findById(Integer id);
+    ReturnProfessorDTO findByIdReturnDTO(Integer id);
     List<ReturnAulaInProfessorDTO> findAulaByIdProfessor(Integer id);
     List<ReturnProfessorDTO> filterAll(CompleteProfessorDTO professorDTO);
     Professor update(Integer id, Professor professor);

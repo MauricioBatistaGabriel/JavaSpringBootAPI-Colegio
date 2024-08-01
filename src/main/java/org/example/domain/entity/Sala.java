@@ -21,6 +21,8 @@ public class Sala {
     @Column(name = "numero_sala")
     private String sala;
 
+    private boolean isPresent = true;
+
     public Sala(String sala) {
         this.sala = sala;
     }

@@ -8,10 +8,9 @@ import java.util.List;
 public interface AlunoService {
 
     Integer save(CompleteAlunoDTO alunoDTO);
-
-    CompleteAlunoDTO findById(Integer id);
+    Aluno findById(Integer id);
+    CompleteAlunoDTO findByIdReturnDTO(Integer id);
     CompleteAlunoDTO findAlunoByIdNota(Integer id);
-
 
     List<CompleteAlunoDTO> filterAll(CompleteAlunoDTO alunoDTO);
 

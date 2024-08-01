@@ -10,7 +10,8 @@ import java.util.List;
 public interface TurmaService {
 
     Integer save(CompleteTurmaDTO turmaDTO);
-    ReturnTurmaDTO findById(Integer id);
+    Turma findById(Integer id);
+    ReturnTurmaDTO findByIdReturnDTO(Integer id);
     ReturnTurmaInOtherClassDTO findByIdTurmaInOtherClass(Integer id);
     ReturnTurmaInOtherClassDTO findTurmaByIdAvaliacao(Integer id);
     List<ReturnTurmaDTO> filterAll(CompleteTurmaDTO turmaDTO);

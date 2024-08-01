@@ -9,7 +9,8 @@ import java.util.List;
 public interface AvaliacaoService {
 
     Integer save(CompleteAvaliacaoDTO avaliacaoDTO);
-    ReturnAvaliacaoDTO findById(Integer id);
+    Avaliacao findById(Integer id);
+    ReturnAvaliacaoDTO findByIdReturnDTO(Integer id);
     ReturnAvaliacaoDTO findAvaliacaoByNotaId(Integer id);
     List<Avaliacao> findAvaliacoesByMateriaId(Integer id);
     List<ReturnAvaliacaoDTO> filterAll(CompleteAvaliacaoDTO avaliacaoDTO);
