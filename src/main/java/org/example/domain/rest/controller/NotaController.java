@@ -1,6 +1,5 @@
 package org.example.domain.rest.controller;
 
-import org.example.domain.entity.Nota;
 import org.example.domain.rest.dto.CompleteNotaDTO;
 import org.example.domain.rest.dto.ReturnNotaDTO;
 import org.example.domain.service.NotaService;
@@ -25,7 +24,7 @@ public class NotaController {
 
     @GetMapping("{id}")
     public ReturnNotaDTO findById(@PathVariable Integer id){
-        return notaService.findById(id);
+        return notaService.findByIdReturnDTO(id);
     }
 
     @GetMapping

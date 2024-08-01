@@ -31,6 +31,8 @@ public class Aula {
     @JoinColumn(name = "id_turma")
     private Turma turma;
 
+    private boolean isPresent = true;
+
     public Aula(String data, Professor professor, Materia materia, Turma turma) {
         this.data = data;
         this.professor = professor;

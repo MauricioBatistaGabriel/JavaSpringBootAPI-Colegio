@@ -8,7 +8,8 @@ import java.util.List;
 public interface SalaService {
 
     Integer save(CompleteSalaDTO salaDTO);
-    CompleteSalaDTO findById(Integer id);
+    Sala findById(Integer id);
+    CompleteSalaDTO findByIdReturnDTO(Integer id);
     List<CompleteSalaDTO> filterAll(CompleteSalaDTO salaDTO);
     Sala update(Integer id, Sala sala);
     void deleteById(Integer id);

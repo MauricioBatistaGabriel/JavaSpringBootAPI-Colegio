@@ -25,7 +25,7 @@ public class AulaController {
 
     @GetMapping("{id}")
     public ReturnAulaDTO findById(@PathVariable Integer id){
-        return aulaService.findById(id);
+        return aulaService.findByIdReturnDTO(id);
     }
 
     @GetMapping

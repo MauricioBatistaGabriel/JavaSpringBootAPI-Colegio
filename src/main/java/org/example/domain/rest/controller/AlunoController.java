@@ -23,7 +23,7 @@ public class AlunoController {
 
     @GetMapping("{id}")
     public CompleteAlunoDTO findById(@PathVariable Integer id){
-        return alunoService.findById(id);
+        return alunoService.findByIdReturnDTO(id);
     }
 
     @GetMapping

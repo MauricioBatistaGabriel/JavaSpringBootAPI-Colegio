@@ -24,7 +24,7 @@ public class AvaliacaoController {
 
     @GetMapping("{id}")
     public ReturnAvaliacaoDTO findById(@PathVariable Integer id){
-        return avaliacaoService.findById(id);
+        return avaliacaoService.findByIdReturnDTO(id);
     }
 
     @GetMapping

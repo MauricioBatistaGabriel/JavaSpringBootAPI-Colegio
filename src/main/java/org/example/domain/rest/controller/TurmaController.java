@@ -25,7 +25,7 @@ public class TurmaController {
 
     @GetMapping("{id}")
     public ReturnTurmaDTO findById(@PathVariable Integer id){
-        return turmaService.findById(id);
+        return turmaService.findByIdReturnDTO(id);
     }
 
     @GetMapping

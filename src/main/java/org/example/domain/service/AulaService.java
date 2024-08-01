@@ -9,7 +9,8 @@ import java.util.List;
 public interface AulaService {
 
     Integer save(CompleteAulaDTO aulaDTO);
-    ReturnAulaDTO findById(Integer id);
+    Aula findById(Integer id);
+    ReturnAulaDTO findByIdReturnDTO(Integer id);
     List<ReturnAulaDTO> filterAll(CompleteAulaDTO aulaDTO);
     Aula update(Integer id, Aula aula);
     void deleteById(Integer id);

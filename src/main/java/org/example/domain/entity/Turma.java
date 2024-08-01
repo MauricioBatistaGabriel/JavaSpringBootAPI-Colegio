@@ -28,6 +28,8 @@ public class Turma {
     @JoinColumn(name = "id_sala")
     private Sala sala;
 
+    private boolean isPresent = true;
+
     public Turma(String nome, Sala sala) {
         this.nome = nome;
         this.sala = sala;

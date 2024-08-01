@@ -27,6 +27,8 @@ public class Nota {
     @JoinColumn(name = "id_avaliacao")
     private Avaliacao avaliacao;
 
+    private boolean isPresent = true;
+
     public Nota(Integer nota, Aluno aluno, Avaliacao avaliacao) {
         this.nota = nota;
         this.aluno = aluno;

@@ -24,6 +24,9 @@ public class NotaServiceImpl implements NotaService {
     private NotaRepository notaRepository;
 
     @Autowired
+    private NotaService notaService;
+
+    @Autowired
     private AlunoRepository alunoRepository;
 
     @Autowired
@@ -43,31 +46,37 @@ public class NotaServiceImpl implements NotaService {
 
     @Override
     public Integer save(CompleteNotaDTO notaDTO) {
-        Aluno aluno = alunoRepository.findById(notaDTO.getAluno())
-                .orElseThrow( () ->
-                        new EntityNotFoundException("Aluno com o ID:" + notaDTO.getAluno() + " não encontrado"));
+        Aluno aluno = alunoService.findById(notaDTO.getAluno());
 
-        Avaliacao avaliacao = avaliacaoRepository.findById(notaDTO.getAvaliacao())
-                .orElseThrow( () ->
-                        new EntityNotFoundException("Avaliação com o ID:" + notaDTO.getAvaliacao() + " não encontrada"));
+        Avaliacao avaliacao = avaliacaoService.findById(notaDTO.getAvaliacao());
 
         Nota nota = new Nota(notaDTO.getNota(), aluno, avaliacao);
-        notaRepository.save(nota);
-        return nota.getId();
+        return notaRepository.save(nota).getId();
     }
 
     @Override
-    public ReturnNotaDTO findById(Integer id) {
+    public Nota findById(Integer id) {
         return notaRepository.findById(id)
                 .map( nota -> {
-                    ReturnAvaliacaoDTO avaliacaoDTO = avaliacaoService.findAvaliacaoByNotaId(nota.getId());
-
-                    CompleteAlunoDTO alunoDTO = alunoService.findAlunoByIdNota(nota.getId());
-
-                    ReturnNotaDTO notaDTO = new ReturnNotaDTO(nota.getNota(), avaliacaoDTO, alunoDTO);
-                    return notaDTO;
+                    if (nota.isPresent() == true){
+                        return nota;
+                    }
+                    else {
+                        throw new EntityNotFoundException("Nota com o ID:" + id + " foi deletada");
+                    }
                 }).orElseThrow( () ->
                         new EntityNotFoundException("Nota com o ID:" + id + " não encontrada"));
+    }
+
+    @Override
+    public ReturnNotaDTO findByIdReturnDTO(Integer id) {
+        Nota nota = findById(id);
+
+        ReturnAvaliacaoDTO avaliacaoDTO = avaliacaoService.findAvaliacaoByNotaId(nota.getId());
+        CompleteAlunoDTO alunoDTO = alunoService.findAlunoByIdNota(nota.getId());
+        ReturnNotaDTO notaDTO = new ReturnNotaDTO(nota.getNota(), avaliacaoDTO, alunoDTO);
+
+        return notaDTO;
     }
 
     @Override
@@ -80,18 +89,18 @@ public class NotaServiceImpl implements NotaService {
                 );
 
         CompleteAlunoDTO alunoDTO = (notaDTO.getAluno() != null) ?
-                alunoService.findById(notaDTO.getAluno()) :
+                alunoService.findByIdReturnDTO(notaDTO.getAluno()) :
                 new CompleteAlunoDTO();
         Aluno aluno = new Aluno(alunoDTO.getNome(), alunoDTO.getCpf(), alunoDTO.getIdade());
 
         CompleteMateriaDTO materiaDTO = (notaDTO.getAvaliacao() != null) ?
-                avaliacaoService.findById(notaDTO.getAvaliacao()).getMateria() :
+                avaliacaoService.findByIdReturnDTO(notaDTO.getAvaliacao()).getMateria() :
                 new CompleteMateriaDTO();
         Materia materia = new Materia(materiaDTO.getNome());
 
 
         ReturnAvaliacaoDTO avaliacaoDTO = (notaDTO.getAvaliacao() != null) ?
-                avaliacaoService.findById(notaDTO.getAvaliacao()) :
+                avaliacaoService.findByIdReturnDTO(notaDTO.getAvaliacao()) :
                 new ReturnAvaliacaoDTO();
 
         Avaliacao avaliacao = new Avaliacao(avaliacaoDTO.getNumeroAvaliacao(), materia);
@@ -103,28 +112,23 @@ public class NotaServiceImpl implements NotaService {
 
         return notas.stream()
                 .map( nota1 -> {
-                    ReturnNotaDTO notaDTO1 = findById(nota1.getId());
+                    ReturnNotaDTO notaDTO1 = findByIdReturnDTO(nota1.getId());
                     return notaDTO1;
                 }).collect(Collectors.toList());
     }
 
     @Override
     public Nota update(Integer id, Nota nota) {
-        return notaRepository.findById(id)
-                .map( nota1 -> {
-                    nota.setId(nota1.getId());
-                    return notaRepository.save(nota);
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Nota com o ID:" + id + " não encontrada"));
+        Nota nota1 = notaService.findById(id);
+
+        nota.setId(nota1.getId());
+
+        return notaRepository.save(nota);
     }
 
     @Override
     public void deleteById(Integer id) {
-        notaRepository.findById(id)
-                .map( nota -> {
-                    notaRepository.deleteById(id);
-                    return Void.TYPE;
-                }).orElseThrow( () ->
-                        new EntityNotFoundException("Nota com o ID:" + id + " não encontrada"));
+        Nota nota = notaService.findById(id);
+        notaRepository.deleteById(nota.getId());
     }
 }

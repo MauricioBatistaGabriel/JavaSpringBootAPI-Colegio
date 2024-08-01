@@ -24,7 +24,7 @@ public class MateriaController {
 
     @GetMapping("{id}")
     public CompleteMateriaDTO findById(@PathVariable Integer id){
-        return materiaService.findByID(id);
+        return materiaService.findByIdReturnDTO(id);
     }
 
     @GetMapping
@@ -41,6 +41,6 @@ public class MateriaController {
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteById(@PathVariable Integer id){
-        materiaService.deleteByID(id);
+        materiaService.deleteById(id);
     }
 }

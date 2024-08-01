@@ -28,6 +28,8 @@ public class Professor {
     @NotEmpty(message = "{campo.cpf}")
     private String cpf;
 
+    private boolean isPresent = true;
+
     public Professor(String nome, String cpf) {
         this.nome = nome;
         this.cpf = cpf;
